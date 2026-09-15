@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+
+model DocumentType {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique @db.VarChar(50)
+  students Student[]
+
+  @@map("document_types")
+}
+
+model Student {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  documentTypeId Int      @map("document_type_id")
+  documentNumber String   @map("document_number") @db.VarChar(255)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  documentType DocumentType @relation(fields: [documentTypeId], references: [id])
+
+  @@map("students")
+}
